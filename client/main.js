@@ -1,30 +1,42 @@
+console.log("hello");
+
 $(function(){
-        var socket = io.connect("http://10.236.52.16",{
-                path: "/diasroom-watcher/socket.io"
+        var socket = io.connect("", {
+                path: "/diasroom-watcher/socket.io",
+		transports: ['websocket']
         });
 
-        var dataset ={};
-        socket.on('emit_from_server',function(data){
-                console.log(data);
+        var dataset =[];
+	for(var i = 0; i < 20; i++){
+    		dataset.push({
+        		frequency:0,
+        		letter:"NULL"+i
+    		});
+	} 
+	var dataNum = 0;
+	graph(dataset);
+       	socket.on('emit_from_server',function(data){
+                d3.select('svg').remove();
+		console.log(data);
                 var DD = new Date();
-                dataset.push({
+                dataset.shift();
+		dataset.push({
                     frequency: data,
-                    letter: DD.getHours() +"h "+ DD.getMinutes() +"m "+ DD.getSeconds() +"s " 
+                    letter:  dataNum+":"+DD.getHours() +"h"  
                 });
+		dataNum++;
                 graph(dataset);
+		tempText(data);
+		//svg.selectAll('.bar').data(dataset);
         });
 
 })
 
+var tempText = function(data){
+	d3.select("h1").text("now temp is " +data+" C");
+}
 
 var graph = function(data){
-          
-        // svg.selectAll("text")
-        //     .remove();
-        // svg.selectAll("g")
-        //     .remove();
-        // svg.selectAll(".bar") 
-        //    .remove();
 
     var margin = {top: 40, right: 20, bottom: 30, left: 40},
         width = 960 - margin.left - margin.right,
@@ -62,9 +74,9 @@ var graph = function(data){
 
     svg.call(tip);
 
-
+console.log(height);;
       x.domain(data.map(function(d) { return d.letter; }));
-      y.domain([0, d3.max(data, function(d) { return d.frequency; })]);
+      y.domain([0, 50]);
 
       svg.append("g")
           .attr("class", "x axis")
@@ -90,14 +102,6 @@ var graph = function(data){
           .attr("y", function(d) { return y(d.frequency); })
           .attr("height", function(d) { return height - y(d.frequency); })
           .on('mouseover', tip.show)
-          .on('mouseout', tip.hide);      
-
-        
-    
-
-    function type(d) {
-      d.frequency = +d.frequency;
-      return d;
-    }
+          .on('mouseout', tip.hide); 
 
 };
