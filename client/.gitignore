@@ -1,0 +1,6 @@
+app/scripts/client.js
+app/scripts/lib
+app/styles/lib
+bower_components
+node_modules
+js
