@@ -8,7 +8,8 @@
     "angular-ui-bootstrap-bower": "~0.11.0",
     "bootstrap": "~3.2.0",
     "d3": "~3.4.10",
-    "socket.io-client": "~1.0.6"
+    "socket.io-client": "~1.0.6",
+    "nvd3": "~1.1.15-beta"
   },
   "exportsOverride": {
     "angular-ui-router": {
