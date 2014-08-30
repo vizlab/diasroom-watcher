@@ -9,6 +9,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "mongoose": "^3.8.15",
     "node-getopt": "^0.2.3",
     "pi-gpio": "0.0.6",
     "q": "^1.0.1",

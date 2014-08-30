@@ -15,6 +15,8 @@ module.exports = function(grunt) {
               renamedType = 'scripts';
             } else if (type === 'css') {
               renamedType = 'styles';
+            } else if (type === 'map') {
+              renamedType = 'scripts';
             }
             return path.join(renamedType, 'lib');
           }

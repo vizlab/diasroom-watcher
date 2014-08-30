@@ -1,26 +1,23 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function() {
   module.exports = function($scope) {
-    var chart, data, i, n, selection, socket;
-    n = 20;
+    var chart, data, n, selection, socket;
+    n = 50;
     data = {
       key: 'Temperature',
-      values: (function() {
-        var _i, _results;
-        _results = [];
-        for (i = _i = 0; 0 <= n ? _i < n : _i > n; i = 0 <= n ? ++_i : --_i) {
-          _results.push({
-            x: i,
-            y: 0
-          });
-        }
-        return _results;
-      })(),
+      values: [],
       color: 'orange'
     };
-    chart = nv.models.multiBarChart().showControls(false).showLegend(false).tooltips(false);
-    selection = d3.select('#barchart');
-    selection.attr({
+    chart = nv.models.multiBarChart().showControls(false).showLegend(false).tooltips(false).x(function(d) {
+      return d.datetime;
+    }).y(function(d) {
+      return d.temperature;
+    }).yDomain([0, 50]).rotateLabels(45).reduceXTicks(false).margin({
+      right: 80,
+      bottom: 80
+    });
+    chart.xAxis.tickFormat(d3.time.format('%Y/%m/%d %H:%M'));
+    selection = d3.select('#barchart').attr({
       height: 500
     }).datum([data]).call(chart);
     $scope.temperature = 0;
@@ -28,15 +25,21 @@
       path: '/diasroom-watcher/socket.io',
       transports: ['websocket']
     });
-    socket.on('emit_from_server', function(temperature) {
-      var _i, _ref;
-      $scope.temperature = +temperature;
-      for (i = _i = 0, _ref = n - 1; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-        data.values[i].y = data.values[i + 1].y;
-      }
-      data.values[n - 1].y = +temperature;
-      selection.call(chart);
+    socket.on('update temperature', function(temperature) {
+      $scope.temperature = +temperature.temperature;
       $scope.$apply();
+    });
+    socket.on('response minitely', function(temperatures) {
+      temperatures.forEach(function(t) {
+        t.datetime = new Date(+t.datetime);
+      });
+      data.values = temperatures;
+      selection.call(chart);
+    });
+    socket.on('update minitely temperature', function() {
+      return socket.emit('request minitely', {
+        n: n
+      });
     });
   };
 

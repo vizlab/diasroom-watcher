@@ -20,14 +20,16 @@
       "css": "dist/css/*.css"
     },
     "jquery": {
-      "js": "dist/*.js"
+      "js": "dist/*.js",
+      "map": "dist/*.map"
     },
     "socket.io-client": {
       "js": "socket.io.js"
     },
     "*": {
       "js": "**/*.js",
-      "css": "**/*.css"
+      "css": "**/*.css",
+      "map": "**/*.map"
     }
   }
 }
